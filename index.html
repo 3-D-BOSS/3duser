@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login and User Balance</title>
+    <title>User Balance and Transactions</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="loginContainer" class="container">
         <h1>Login</h1>
-        <input type="text" id="username" placeholder="Username">
+        <input type="text" id="username" placeholder="Username" value="user1" disabled>
         <input type="password" id="password" placeholder="Password">
         <button id="loginBtn">Login</button>
         <p id="loginMessage"></p>
     </div>
+    
     <div id="appContainer" class="container" style="display:none;">
         <p id="userBalance">Balance: $0</p>
+        <button id="logoutBtn">Logout</button>
         <input type="text" id="searchBar" placeholder="Search for a number...">
         <table id="resultsTable">
             <thead>
@@ -33,29 +35,28 @@
             <div id="historyContainer"></div>
         </div>
     </div>
-    <script >
+    
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
     const loginContainer = document.getElementById('loginContainer');
     const appContainer = document.getElementById('appContainer');
     const userBalanceDisplay = document.getElementById('userBalance');
     const loginBtn = document.getElementById('loginBtn');
-    const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     const loginMessage = document.getElementById('loginMessage');
     const searchBar = document.getElementById('searchBar');
     const results = document.getElementById('results');
     const historyContainer = document.getElementById('historyContainer');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-    // Example users with hardcoded usernames and passwords
-    const users = {
-        'user1': 'password1',
-        'user2': 'password2',
-        // Add more users as needed
-    };
+    // Example single user
+    const validUsername = 'user1';
+    const validPassword = 'password1';
 
     // Initialize balance and history from localStorage
-    let userBalance = parseFloat(localStorage.getItem('userBalance')) || 0;
+    let userBalance = parseFloat(localStorage.getItem('userBalance')) || 1000; // Default balance
     const loggedInUser = localStorage.getItem('loggedInUser');
+    
     if (loggedInUser) {
         loginContainer.style.display = 'none';
         appContainer.style.display = 'block';
@@ -66,11 +67,10 @@
 
     // Handle login
     loginBtn.addEventListener('click', () => {
-        const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
         
-        if (users[username] && users[username] === password) {
-            localStorage.setItem('loggedInUser', username);
+        if (validPassword === password) {
+            localStorage.setItem('loggedInUser', validUsername);
             localStorage.setItem('userBalance', userBalance);
             loginContainer.style.display = 'none';
             appContainer.style.display = 'block';
@@ -78,15 +78,22 @@
             renderResults();
             renderHistory();
         } else {
-            loginMessage.textContent = 'Invalid username or password.';
+            loginMessage.textContent = 'Invalid password.';
         }
+    });
+
+    // Handle logout
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('loggedInUser');
+        // Do not remove userBalance; keep it to retain balance info
+        location.reload();
     });
 
     // Example data
     const numbers = [
-        { number: '001', name: 'Name 1', photo: 'https://via.placeholder.com/50?text=001', amount: 10 },
-        { number: '002', name: 'Name 2', photo: 'https://via.placeholder.com/50?text=002', amount: 20 },
-        { number: '003', name: 'Name 3', photo: 'https://via.placeholder.com/50?text=003', amount: 30 },
+        { number: '001', name: 'Name 1', photo: 'https://via.placeholder.com/50?text=001', amount: 50 },
+        { number: '002', name: 'Name 2', photo: 'https://via.placeholder.com/50?text=002', amount: 100 },
+        { number: '003', name: 'Name 3', photo: 'https://via.placeholder.com/50?text=003', amount: 150 },
         // Add more entries as needed
     ];
 
@@ -156,13 +163,6 @@
     font-family: Arial, sans-serif;
 }
 
-nav {
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-}
-
 .container {
     max-width: 800px;
     margin: 20px auto;
@@ -170,19 +170,20 @@ nav {
     text-align: center;
 }
 
-#loginContainer {
-    text-align: center;
+#loginContainer, #appContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-#loginContainer input, #loginContainer button {
+#loginContainer input, #loginContainer button, #searchBar {
     width: 100%;
+    max-width: 300px;
     padding: 10px;
     margin: 10px 0;
 }
 
 #searchBar {
-    width: 100%;
-    padding: 10px;
     margin-bottom: 20px;
 }
 
