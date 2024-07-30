@@ -9,17 +9,23 @@
 <body>
     <div id="loginContainer" class="container">
         <h1>Login</h1>
-        <input type="text" id="username" placeholder="Username" value="user1" disabled>
-        <input type="password" id="password" placeholder="Password">
+        <input type="text" id="username" placeholder="Username" />
+        <input type="password" id="password" placeholder="Password" />
         <button id="loginBtn">Login</button>
         <p id="loginMessage"></p>
     </div>
     
+   
     <div id="appContainer" class="container" style="display:none;">
+        <h3>Player : Thar wai phyo</h3>
         <p id="userBalance">Balance: $0</p>
+        <a href="history.html" style="color:rgb(0, 0, 0); margin-left: 50%;">History</a>
+
         <button id="logoutBtn">Logout</button>
-        <input type="text" id="searchBar" placeholder="Search for a number...">
-        <table id="resultsTable">
+        <div class="all">
+        <div class="container" id="searchContainer">
+            <input type="text" id="searchBar" placeholder="Search for a number...">
+            <table id="resultsTable">
             <thead>
                 <tr>
                     <th>Photo</th>
@@ -30,12 +36,10 @@
             </thead>
             <tbody id="results"></tbody>
         </table>
-        <div id="history" class="container">
-            <h2>Transaction History</h2>
-            <div id="historyContainer"></div>
-        </div>
+      
     </div>
-    
+</div>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
     const loginContainer = document.getElementById('loginContainer');
@@ -43,6 +47,7 @@
     const userBalanceDisplay = document.getElementById('userBalance');
     const loginBtn = document.getElementById('loginBtn');
     const passwordInput = document.getElementById('password');
+    const usernameInput = document.getElementById('username');
     const loginMessage = document.getElementById('loginMessage');
     const searchBar = document.getElementById('searchBar');
     const results = document.getElementById('results');
@@ -56,21 +61,15 @@
     // Initialize balance and history from localStorage
     let userBalance = parseFloat(localStorage.getItem('userBalance')) || 1000; // Default balance
     const loggedInUser = localStorage.getItem('loggedInUser');
-    
-    if (loggedInUser) {
-        loginContainer.style.display = 'none';
-        appContainer.style.display = 'block';
-        userBalanceDisplay.textContent = `Balance: $${userBalance}`;
-        renderResults();
-        renderHistory();
-    }
 
+    
     // Handle login
     loginBtn.addEventListener('click', () => {
         const password = passwordInput.value.trim();
+        const username = usernameInput.value.trim();
         
-        if (validPassword === password) {
-            localStorage.setItem('loggedInUser', validUsername);
+        if (validUsername === username && validPassword === password) {
+            localStorage.setItem('loggedInUser', username);
             localStorage.setItem('userBalance', userBalance);
             loginContainer.style.display = 'none';
             appContainer.style.display = 'block';
@@ -78,22 +77,57 @@
             renderResults();
             renderHistory();
         } else {
-            loginMessage.textContent = 'Invalid password.';
+            loginMessage.textContent = 'Invalid username or password.';
         }
     });
 
     // Handle logout
     logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('loggedInUser');
-        // Do not remove userBalance; keep it to retain balance info
-        location.reload();
+        localStorage.removeItem('userBalance');
+        localStorage.removeItem('history');
+        location.reload(); // Redirect to login page
     });
 
     // Example data
     const numbers = [
-        { number: '001', name: 'Name 1', photo: 'https://via.placeholder.com/50?text=001', amount: 50 },
-        { number: '002', name: 'Name 2', photo: 'https://via.placeholder.com/50?text=002', amount: 100 },
-        { number: '003', name: 'Name 3', photo: 'https://via.placeholder.com/50?text=003', amount: 150 },
+    { number: '545 / နဂါး', name: 'နဂါး', photo: 'dragon.jpg', name: 'နဂါး',  amount: 1000 },
+        { number: '503 / သိုင်းသမား', name: 'သိုင်းသမား', photo: 'thine ta mar.jpg',  amount: 1000 },
+        { number: '502 / ဓားဆောင်သူ', name: 'ဓားဆောင်သူ', photo: 'Dar saund thu.jpg',  amount: 1000 },
+        { number: '515 / ဥဒေါင်း', name: 'ဥဒေါင်း', photo: 'u daung.jpg',  amount: 1000 },
+        { number: '539 / ခြင်္သေ့', name: 'ခြင်္သေ့', photo: 'lion.jpg',  amount: 1000 },
+        { number: '541 / သိမ်းငှက်', name: 'သိမ်းငှက်', photo: 'thainbird.jpg',  amount: 1000 },
+        { number: '508 / ကျားခေါင်း', name: 'ကျားခေါင်း', photo: 'digerhead.jpg',  amount: 1000 },
+        { number: '507 / ဗျိုင်း', name: 'ဗျိုင်း', photo: 'pyain.jpg',  amount: 1000 },
+        { number: '537 / လူရည်ချွန်', name: 'လူရည်ချွန်', photo: 'luyaychon.jpg',  amount: 1000 },
+        { number: '532 / ဥသြငှက်', name: 'ဥသြငှက်', photo: 'oakallnyat.jpg',  amount: 1000 },
+        { number: '527 / ဖိုးမုတ်ဆိတ်', name: 'ဖိုးမုတ်ဆိတ်', photo: 'phoemotesite.jpg',  amount: 1000 },
+        { number: '519 / စာရင်းကိုင်', name: 'စာရင်းကိုင်', photo: 'saryinkyain.jpg',  amount: 1000 },
+        { number: '529 / ဆတ်', name: 'ဆတ်', photo: 'sat.jpg',  amount: 1000 },
+        { number: '546 / ငုံး', name: 'ငုံး', photo: 'nyone.jpg',  amount: 1000 },
+        { number: '504 / မြင်း', name: 'မြင်း', photo: 'myinn.jpg',  amount: 1000 },
+        { number: '524 / လွေးငှက်', name: 'လွေးငှက်', photo: 'lawybird.jpg',  amount: 1000 },
+        { number: '538 / နွား', name: 'နွား', photo: 'cow.jpg',  amount: 1000 },
+        { number: '528 / လားလူမျိုး', name: 'လားလူမျိုး', photo: 'larhulumyo.jpg',  amount: 1000 },
+        { number: '512 / ဓားကိုင်သူ', name: 'ဓားကိုင်သူ', photo: 'tharkointhu.jpg',  amount: 1000 },
+        { number: '522 / ကျီး', name: 'ကျီး', photo: 'gyee.jpg',  amount: 1000 },
+        { number: '543 / ရွာဆော်', name: 'ရွာဆော်', photo: 'ywarsaw.jpg',  amount: 1000 },
+        { number: '520 / ဂျိူးငှက်', name: 'ဂျိူးငှက်', photo: 'joe.jpg',  amount: 1000 },
+        { number: '534 / ၀က် ', name: '၀က်', photo: 'watt.jpg',  amount: 1000 },
+        { number: '516 / အောက်ချင်းငှက်', name: 'အောက်ချင်းငှက်', photo: 'outchinbird.jpg',  amount: 1000 },
+        { number: '535 / တားမြစ်သူ', name: 'တားမြစ်သူ', photo: 'tarmyitthu.jpg',  amount: 1000 },
+        { number: '540 / ဘီလုံးငှက်ငယ်', name: 'ဘီလုံးငှက်ငယ်', photo: 'beelonebirdnge.jpg',  amount: 1000 },
+        { number: '511 / ကြိုဆိုသူ', name: 'ကြိုဆိုသူ', photo: 'kyosoethu.jpg',  amount: 1000 },
+        { number: '518 / ယင်းနက်လူမျိုး', name: 'ယင်းနက်လူမျိုး', photo: 'yinnatlumyo.jpg',  amount: 1000 },
+        { number: '513 / ၀ံပုလွေ', name: '၀ံပုလွေ', photo: 'wonpalway.jpg',  amount: 1000 },
+        { number: '549 / မုဆိူး', name: 'မုဆိူး', photo: 'motesoe.jpg',  amount: 1000 },
+        { number: '544 / လေးသမား', name: 'လေးသမား', photo: 'laytamar.jpg',  amount: 1000 },
+        { number: '510 / နာဂလူမျိုး', name: 'နာဂလူမျိုး', photo: 'nargalumyo.jpg',  amount: 1000 },
+        { number: '536 / ရခိုင်လူမျိုး', name: 'ရခိုင်လူမျိုး', photo: 'yakhainlumyo.jpg',  amount: 1000 },
+        { number: '523 / ဖား', name: 'ဖား', photo: 'par.jpg',  amount: 1000 },
+        { number: '525 / မင်းသား', name: 'မင်းသား', photo: 'mintar.jpg',  amount: 1000 },
+        { number: '533 / အလှမယ်', name: 'အလှမယ်', photo: 'alamal.jpg',  amount: 1000 },
+        { number: '509 / ငါးမန်း', name: 'ငါးမန်း', photo: 'fishman.jpg',  amount: 1000 },
         // Add more entries as needed
     ];
 
@@ -109,6 +143,19 @@
         });
     }
 
+    searchBar.addEventListener('input', () => {
+        const query = searchBar.value.toLowerCase();
+        results.innerHTML = '';
+
+        numbers.filter(item => item.number.includes(query))
+               .forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><img src="${item.photo}" alt="${item.name}"></td><td>${item.number}</td><td>${item.name}</td><td>${item.amount}</td>`;
+                    tr.addEventListener('click', () => handleChoice(item));
+                    results.appendChild(tr);
+               });
+    });
+
     function handleChoice(item) {
         if (userBalance >= item.amount) {
             userBalance -= item.amount;
@@ -116,6 +163,7 @@
             userBalanceDisplay.textContent = `Balance: $${userBalance}`;
             alert(`You selected number ${item.number} and $${item.amount} was deducted from your balance.`);
             saveHistory(item);
+            sendEmail(item);
         } else {
             alert('Insufficient balance!');
         }
@@ -141,9 +189,31 @@
         historyData.forEach(item => {
             const div = document.createElement('div');
             div.classList.add('history-item');
-            div.innerHTML = `<img src="${item.photo}" alt="${item.name}"><div><p>Number: ${item.number}</p><p>Name: ${item.name}</p><p>Amount: $${item.amount}</p><p>Time: ${item.timestamp}</p></div>`;
+            div.innerHTML = `<img src="${item.photo}" alt="${item.name}"><div><p>Number: ${item.number}</p><p>Name: ${item.name}</p><p>Amount: $${item.amount}</p><p>Time: ${item.timestamp}</p><p>for 16/02/2024.</p></div>`;
             historyContainer.appendChild(div);
         });
+    }
+
+    function sendEmail(item) {
+        emailjs.init("80uAcGkKQNbay0xpB"); // Initialize EmailJS with your user ID
+        const emailParams = {
+            to_name: 'Your Name', // Replace with the recipient's name
+            from_name: 'Your App', // Replace with your app's name
+            subject: 'Transaction Alert',
+            message: `You selected number ${item.number} with amount $${item.amount} for 16/02/2024.`,
+            amount: item.amount,
+            number: item.number,
+            name: item.name,
+            photo: item.photo
+        };
+        
+        emailjs.send('default_service', 'template_099mw1b', emailParams)
+            .then(response => {
+                console.log('Email sent successfully', response);
+            })
+            .catch(error => {
+                console.error('Error sending email:', error);
+            });
     }
 
     // Handle page reloads
@@ -164,10 +234,10 @@
 }
 
 .container {
+    margin-right: 20%;
     max-width: 800px;
     margin: 20px auto;
     padding: 20px;
-    text-align: center;
 }
 
 #loginContainer, #appContainer {
@@ -188,7 +258,7 @@
 }
 
 table {
-    width: 100%;
+    width: 50%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
@@ -196,7 +266,7 @@ table {
 th, td {
     border: 1px solid #ddd;
     padding: 10px;
-    text-align: left;
+    margin-right: 100%;
 }
 
 th {
@@ -209,8 +279,9 @@ tbody tr:hover {
 }
 
 #results img {
-    width: 50px;
-    height: 50px;
+    width: 100px;
+    height: 100px;
+    margin-right: 100%;
 }
 
 .history-item {
@@ -223,10 +294,24 @@ tbody tr:hover {
 }
 
 .history-item img {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
+    width: 20px;
+    height: 20px;
 }
-
+#userBalance{
+    margin-right:50%;
+}
+.all{
+    width: auto;
+    height: auto;
+    
+}
+a{
+    margin-right: 10%;
+}
+#resultsTable{
+    width: 100%;
+    margin-right: 100px;
+    padding-right: 100%;
+}
 </style>
 </html>
