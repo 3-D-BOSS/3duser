@@ -59,7 +59,7 @@
     const validPassword = 'password1';
 
     // Initialize balance and history from localStorage
-    let userBalance = parseFloat(localStorage.getItem('userBalance')) || 1000000; // Default balance
+    let userBalance = parseFloat(localStorage.getItem('userBalance')) || 100000000; // Default balance
     const loggedInUser = localStorage.getItem('loggedInUser');
 
     
@@ -234,10 +234,7 @@
 }
 
 .container {
-    margin-right: 20%;
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
+    
 }
 
 #loginContainer, #appContainer {
@@ -254,7 +251,12 @@
 }
 
 #searchBar {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    display: grid;
     margin-bottom: 20px;
+    margin-left: 10%;
 }
 
 table {
